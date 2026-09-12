@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Shane Pockrus — self-taught builder in Broken Arrow, Oklahoma: a hardened home server, a self-hosted AI memory (Postgres + pgvector + MCP) that every assistant on his desk can query, and apps shipped by directing multi-agent Claude Code teams.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="Shane Pockrus Builds">
+<meta property="og:description" content="I build and run the systems I actually use. No degree — receipts instead.">
+<meta property="og:type" content="website">
+<title>Shane Pockrus Builds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+  :root {
+    --paper: #EEF2F5;
+    --paper-2: #E3E9EE;
+    --ink: #1B2530;
+    --ink-2: #4A5866;
+    --ink-3: #7A8794;
+    --rule: #C9D2DA;
+    --brass: #9A7A3F;
+    --brass-2: #C9A46A;
+    --brass-wash: rgba(154,122,63,0.10);
+    --ok: #2F7D5B;
+    --code-bg: #E4EAEF;
+    --shadow: 0 1px 0 rgba(27,37,48,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #101820;
+      --paper-2: #16202A;
+      --ink: #E6EBEF;
+      --ink-2: #AEB9C4;
+      --ink-3: #7F8B97;
+      --rule: #2A3642;
+      --brass: #C9A46A;
+      --brass-2: #E0C289;
+      --brass-wash: rgba(201,164,106,0.12);
+      --ok: #6CC29B;
+      --code-bg: #1B2632;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #101820;
+    --paper-2: #16202A;
+    --ink: #E6EBEF;
+    --ink-2: #AEB9C4;
+    --ink-3: #7F8B97;
+    --rule: #2A3642;
+    --brass: #C9A46A;
+    --brass-2: #E0C289;
+    --brass-wash: rgba(201,164,106,0.12);
+    --ok: #6CC29B;
+    --code-bg: #1B2632;
+    --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brass); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--brass-2); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 2px; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.88em; }
+  code { background: var(--code-bg); padding: 0.08em 0.35em; border-radius: 3px; }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1.05; font-variation-settings: "opsz" 144; }
+  h2 { font-size: 1.75rem; line-height: 1.2; margin-bottom: 0.35rem; }
+  h3 { font-size: 1.2rem; line-height: 1.25; font-weight: 700; }
+  p { margin: 0 0 1rem; max-width: 66ch; }
+  .eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header.site { border-bottom: 1px solid var(--rule); }
+  .site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 18px; padding-bottom: 18px; flex-wrap: wrap; }
+  .wordmark { font-family: "Fraunces", serif; font-weight: 700; font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+  nav a { color: var(--ink-2); text-decoration: none; font-size: 0.92rem; margin-left: 18px; }
+  nav a:hover { color: var(--ink); }
+
+  /* Hero */
+  .hero { padding: 64px 0 40px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+  .hero p.lede { font-size: 1.15rem; color: var(--ink-2); max-width: 52ch; margin-top: 1.1rem; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 1.2rem; font-size: 0.92rem; color: var(--ink-2); }
+  .facts span::before { content: "·"; margin-right: 10px; color: var(--ink-3); }
+  .facts span:first-child::before { content: none; margin: 0; }
+  .cta { margin-top: 1.6rem; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 10px 16px; border: 1px solid var(--brass); color: var(--brass); text-decoration: none; font-weight: 500; font-size: 0.95rem; border-radius: 3px; }
+  .btn.primary { background: var(--brass); color: var(--paper); }
+  .btn.primary:hover { background: var(--brass-2); border-color: var(--brass-2); color: var(--paper); }
+  .btn:hover { color: var(--brass-2); border-color: var(--brass-2); }
+
+  figure { margin: 0; }
+  figcaption { font-size: 0.8rem; color: var(--ink-3); margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+  .diagram { width: 100%; height: auto; display: block; }
+
+  /* Sections */
+  section.block { padding: 40px 0; border-top: 1px solid var(--rule); }
+  .block-head { display: grid; grid-template-columns: 220px 1fr; gap: 24px; margin-bottom: 20px; }
+  .block-head .eyebrow { padding-top: 6px; }
+  .block-head p { color: var(--ink-2); margin-bottom: 0; }
+
+  /* Runbook table */
+  .runbook { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: "IBM Plex Mono", monospace; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  tr:last-child td { border-bottom: none; }
+  td.svc { white-space: nowrap; font-weight: 600; }
+  td.when { font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+
+  /* Projects */
+  .project { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; padding: 32px 0; border-top: 1px dashed var(--rule); }
+  .project:first-of-type { border-top: none; padding-top: 8px; }
+  .project h3 { font-size: 1.45rem; margin-bottom: 4px; }
+  .project .tag { font-size: 0.85rem; color: var(--ink-3); margin-bottom: 14px; }
+  .project p { margin-bottom: 0.7rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+  .chip { font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; padding: 3px 8px; border: 1px solid var(--rule); border-radius: 3px; color: var(--ink-2); background: var(--paper-2); }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--ink-2); font-family: "IBM Plex Mono", monospace; }
+  .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+  .status.wip::before { background: var(--brass); }
+  .aside { background: var(--brass-wash); border-left: 3px solid var(--brass); padding: 10px 14px; font-size: 0.92rem; color: var(--ink-2); margin-top: 10px; }
+  .aside strong { color: var(--ink); }
+
+  /* Method */
+  .method { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; }
+  .method div { border-top: 2px solid var(--brass); padding-top: 10px; }
+  .method h3 { font-family: "IBM Plex Sans", sans-serif; font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+  .method p { font-size: 0.95rem; color: var(--ink-2); margin: 0; }
+  .laws { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; }
+  .laws li { font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--ink-2); padding-left: 16px; position: relative; }
+  .laws li::before { content: "§"; position: absolute; left: 0; color: var(--brass); }
+
+  /* Career */
+  .career { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .career .row { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .career .row:last-child { border-bottom: none; }
+  .career .when { font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--ink-3); padding-top: 3px; font-variant-numeric: tabular-nums; }
+  .career .what strong { display: block; }
+  .career .what span { color: var(--ink-2); font-size: 0.95rem; }
+
+  footer { border-top: 1px solid var(--rule); padding: 28px 0 48px; color: var(--ink-3); font-size: 0.88rem; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 40px; }
+    .project { grid-template-columns: 1fr; gap: 18px; }
+    .block-head { grid-template-columns: 1fr; gap: 6px; }
+    .method, .laws { grid-template-columns: 1fr; }
+    .career .row { grid-template-columns: 1fr; gap: 2px; }
+  }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="wordmark" href="#top">Shane Pockrus</a>
+    <nav>
+      <a href="#running">What I run</a>
+      <a href="#projects">Projects</a>
+      <a href="#method">How I work</a>
+      <a href="#before">Background</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Self-taught · Broken Arrow, Oklahoma</div>
+      <h1>I build and run the systems I actually use.</h1>
+      <p class="lede">A hardened home server, a self-hosted AI memory that every assistant on my desk can query, and an investing-discipline app shipped by directing multi-agent Claude Code teams. No degree — receipts instead.</p>
+      <div class="facts">
+        <span>Remote, open to relocation</span>
+        <span>Ten-plus years customer-facing</span>
+        <span>Founded, ran, and sold a licensed retail business</span>
+      </div>
+      <div class="cta">
+        <a class="btn primary" href="#projects">See the builds</a>
+        <a class="btn" href="mailto:shanepockrus@gmail.com">Email me</a>
+      </div>
+    </div>
+    <figure>
+      <svg class="diagram" viewBox="0 0 540 330" role="img" aria-labelledby="sysmap-title">
+        <title id="sysmap-title">System map: an Obsidian vault syncs to the Vault server, is indexed into Postgres with pgvector using embeddings from a desktop GPU, and is served to AI clients over an MCP server on a private tailnet.</title>
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+          </marker>
+        </defs>
+        <rect x="12" y="12" width="516" height="306" rx="6" fill="none" stroke="var(--rule)" stroke-dasharray="5 5"/>
+        <text x="26" y="32" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-3)" letter-spacing="1.5">PRIVATE TAILNET (WIREGUARD)</text>
+
+        <rect x="30" y="58" width="190" height="100" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+        <text x="42" y="80" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">Desktop PC</text>
+        <text x="42" y="99" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Obsidian vault (Markdown)</text>
+        <text x="42" y="115" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Ollama on AMD 7900 XTX</text>
+        <text x="42" y="131" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">qwen3-embedding · qwen3</text>
+        <text x="42" y="147" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Claude Desktop · Code · Codex</text>
+
+        <rect x="318" y="58" width="192" height="152" rx="4" fill="var(--paper-2)" stroke="var(--brass)" stroke-width="1.5"/>
+        <text x="330" y="80" font-family="IBM Plex Sans, sans-serif" font-size="13" font-weight="600" fill="var(--ink)">The Vault</text>
+        <text x="330" y="98" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Ubuntu Server 24.04</text>
+        <text x="330" y="116" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Postgres 16 + pgvector</text>
+        <text x="330" y="132" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">memory_indexer.py · 21:00</text>
+        <text x="330" y="148" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">memory-mcp (systemd)</text>
+        <text x="330" y="164" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">canon fact-cards</text>
+        <text x="330" y="180" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">Pi-hole · Kuma · ntfy</text>
+        <text x="330" y="196" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">backups 03:00 · 14 days</text>
+
+        <line x1="221" y1="84" x2="316" y2="84" stroke="var(--ink-3)" marker-end="url(#arr)"/>
+        <text x="226" y="77" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-3)">Syncthing mirror</text>
+
+        <line x1="316" y1="126" x2="221" y2="126" stroke="var(--ink-3)" marker-end="url(#arr)"/>
+        <text x="238" y="119" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-3)">embeddings</text>
+
+        <path d="M414 210 L414 252 L125 252 L125 244" fill="none" stroke="var(--ink-3)" marker-end="url(#arr)"/>
+        <text x="140" y="268" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-3)">MCP over HTTPS · read-only role · exclusion policy</text>
+
+        <rect x="30" y="188" width="190" height="54" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+        <text x="42" y="208" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">AI clients ask memory</text>
+        <text x="42" y="226" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="var(--ink-2)">search · read_doc · stats</text>
+
+        <text x="26" y="302" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-3)">Nothing is bound to 0.0.0.0. Personal data stays on loopback behind the tailnet.</text>
+      </svg>
+      <figcaption>Fig. 1 — the estate at a glance. Every box exists and is running.</figcaption>
+    </figure>
+  </section>
+
+  <section class="block" id="running">
+    <div class="block-head">
+      <div class="eyebrow">What I run</div>
+      <p>The Vault is a repurposed X99 desktop (i7-5930K, 32 GB) turned headless Ubuntu Server. It is the load-bearing wall of the house: if it goes down, DNS goes down, so it is monitored from outside itself. Everything below is in production for a household of two, documented in runbooks and a command cheat sheet.</p>
+    </div>
+    <div class="runbook">
+      <table>
+        <thead><tr><th>Service</th><th>Job</th><th>Schedule / note</th></tr></thead>
+        <tbody>
+          <tr><td class="svc">Pi-hole</td><td>Network-wide DNS filtering; the router hands the Vault out as DNS to every device</td><td class="when">always · excluded from the backup stop loop</td></tr>
+          <tr><td class="svc">Uptime Kuma → ntfy</td><td>A monitor per service; failures push to both phones through self-hosted ntfy</td><td class="when">always</td></tr>
+          <tr><td class="svc">healthchecks.io cron</td><td>Dead-man's switch: an outage alerts even when Kuma dies with the box</td><td class="when">every 5 min</td></tr>
+          <tr><td class="svc">Backups</td><td>Containers stopped, snapshot taken, mirrored to the PC by Syncthing</td><td class="when">03:00 · 14-day retention</td></tr>
+          <tr><td class="svc">Postgres 16 + pgvector</td><td>The memory store (4,096-dim vectors, exact scan for perfect recall at this corpus size)</td><td class="when">always</td></tr>
+          <tr><td class="svc">memory_indexer.py</td><td>Re-chunks and re-embeds changed docs; purges deleted sources with a guard on how much it may delete per run</td><td class="when">21:00 nightly</td></tr>
+          <tr><td class="svc">memory-mcp</td><td>MCP server exposing search / read_doc / stats to Claude Desktop, Claude Code, and Codex</td><td class="when">systemd · HTTPS on the tailnet</td></tr>
+          <tr><td class="svc">Research runner</td><td>Scheduled local-model research missions over a private SearXNG instance, with source scoring</td><td class="when">04:00 · must finish by 08:15</td></tr>
+          <tr><td class="svc">Chronicler</td><td>A morning steward's brief on the estate's own state</td><td class="when">06:00</td></tr>
+          <tr><td class="svc">Jellyfin · wger · Palworld</td><td>Media, fitness tracking (tailnet-only), and a game server for friends</td><td class="when">always</td></tr>
+          <tr><td class="svc">Syncthing · Tailscale · Portainer · mosquitto</td><td>Sync with versioning, the VPN, a Docker UI, and an MQTT broker for the sensor builds</td><td class="when">always</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="block-head">
+      <div class="eyebrow">Projects</div>
+      <p>Three builds and a bench of smaller tools, each one solving a problem I had. Dates are 2025–2026; all of them are running today unless marked.</p>
+    </div>
+
+    <article class="project">
+      <div>
+        <h3>Estate Memory</h3>
+        <div class="tag">A self-hosted RAG system and MCP server, so every AI on my desk shares one memory of my projects</div>
+        <p><strong>The problem.</strong> Every new chat started cold. Decisions already made got re-derived, and long documents got pasted around by hand.</p>
+        <p><strong>What I built.</strong> My Obsidian vault mirrors to the server with Syncthing. A pure-standard-library Python indexer chunks the docs, embeds them with <code>qwen3-embedding</code> running on my desktop GPU through Ollama, and stores them in Postgres 16 with pgvector. Search is hybrid — vector similarity plus keyword matching, weighted toward recent documents — with a heading breadcrumb carried into each chunk so a dated log entry keeps its date. An MCP server exposes <code>memory_search</code>, <code>memory_read_doc</code>, and <code>memory_stats</code>; it runs as a systemd service, bound to loopback behind <code>tailscale serve</code>, with a read-only database role and a file exclusion list so private material never gets indexed.</p>
+        <p><strong>Who uses it.</strong> Claude Desktop (via an extension), Claude Code, and Codex CLI all have the tools. A "canon" step generates fact-cards from the sources with the local model, and the rule is written on the card: <em>cards are interpretation; sources are truth.</em></p>
+        <p><strong>Source.</strong> A sanitized, portable release is public at <a href="https://github.com/SwagLordPrime/estate-memory">github.com/SwagLordPrime/estate-memory</a>: docker-compose for pgvector, any Ollama host, a fictional sample corpus, example systemd units, and 37 offline tests that run without a database. The README says what was measured and what wasn't.</p>
+        <span class="status">running · nightly index at 21:00 · source public</span>
+        <div class="chips"><span class="chip">Python (stdlib only)</span><span class="chip">Postgres 16</span><span class="chip">pgvector</span><span class="chip">Ollama</span><span class="chip">MCP</span><span class="chip">systemd</span><span class="chip">Tailscale</span><span class="chip">Syncthing</span></div>
+      </div>
+      <figure>
+        <svg class="diagram" viewBox="0 0 470 300" role="img" aria-labelledby="mem-title">
+          <title id="mem-title">Data flow of Estate Memory from Markdown documents to indexed chunks to the MCP server to AI clients.</title>
+          <defs>
+            <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker>
+          </defs>
+          <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-2)">
+            <rect x="16" y="20" width="150" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="26" y="38" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">Markdown docs</text>
+            <text x="26" y="54">~40 docs, frontmatter</text>
+
+            <line x1="167" y1="42" x2="194" y2="42" stroke="var(--ink-3)" marker-end="url(#arr2)"/>
+
+            <rect x="196" y="20" width="160" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="206" y="38" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">Chunk + breadcrumb</text>
+            <text x="206" y="54">heading path per chunk</text>
+
+            <path d="M276 64 L276 90" stroke="var(--ink-3)" marker-end="url(#arr2)" fill="none"/>
+
+            <rect x="196" y="92" width="160" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="206" y="110" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">Embed on GPU</text>
+            <text x="206" y="126">qwen3-embedding · 4096-d</text>
+
+            <path d="M276 136 L276 162" stroke="var(--ink-3)" marker-end="url(#arr2)" fill="none"/>
+
+            <rect x="196" y="164" width="160" height="44" rx="4" fill="var(--paper-2)" stroke="var(--brass)" stroke-width="1.5"/>
+            <text x="206" y="182" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">Postgres + pgvector</text>
+            <text x="206" y="198">hybrid: vector + keyword</text>
+
+            <path d="M276 208 L276 234" stroke="var(--ink-3)" marker-end="url(#arr2)" fill="none"/>
+
+            <rect x="196" y="236" width="160" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="206" y="254" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">MCP server</text>
+            <text x="206" y="270">read-only role · HTTPS</text>
+
+            <line x1="194" y1="258" x2="167" y2="258" stroke="var(--ink-3)" marker-end="url(#arr2)"/>
+
+            <rect x="16" y="236" width="150" height="44" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="26" y="254" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">AI clients</text>
+            <text x="26" y="270">Claude · Codex · local</text>
+
+            <rect x="372" y="92" width="90" height="116" rx="4" fill="none" stroke="var(--rule)" stroke-dasharray="4 4"/>
+            <text x="380" y="110" fill="var(--ink-3)" font-size="9.5">GUARDS</text>
+            <text x="380" y="128" font-size="9.5">exclusion list</text>
+            <text x="380" y="144" font-size="9.5">purge cap/run</text>
+            <text x="380" y="160" font-size="9.5">recency weight</text>
+            <text x="380" y="176" font-size="9.5">loopback bind</text>
+            <text x="380" y="192" font-size="9.5">read-only user</text>
+          </g>
+        </svg>
+        <figcaption>Fig. 2 — a document becomes an answer. Guards on the right are what make it safe to leave running.</figcaption>
+      </figure>
+    </article>
+
+    <article class="project">
+      <div>
+        <h3>GRIMOIRE — the Council Dashboard</h3>
+        <div class="tag">An investing-discipline app that makes me follow my own rules, built by directing multi-agent Claude Code teams</div>
+        <p><strong>The problem.</strong> Trading decisions made in the moment are bad decisions. I wanted a system where the rules are written down, the record can't be quietly edited, and a review is forced on a schedule.</p>
+        <p><strong>What I built.</strong> A Flask + SQLite application with append-only ledgers — <code>UPDATE</code> and <code>DELETE</code> raise inside the database, so a mistake is corrected by a new row, never by rewriting history — a single-writer boundary (the app is the only ledger writer), and scheduled "rites" run by systemd timers behind a window guard that refuses to fire more than twenty minutes off its ratified minute, because a missed window must stay missed. A read-only brokerage integration feeds positions; Claude generates the morning and Monday pre-trade briefs from versioned per-job prompt files under a hard monthly API spend cap, with deep audits routed through the Batch API for the discount.</p>
+        <p><strong>How it shipped.</strong> I wrote build plans with explicit gates, chose model and effort tiers per task to control cost, ran an adversarial verification pass against the live system before accepting any "done," and kept handoff, backlog, and debrief documents current across Claude and Codex sessions. Rites that fire unattended are re-verified three trading days later, because a cutover-day check can't prove that.</p>
+        <span class="status">running · rites fire from the server on schedule · private repo (it holds my trading record)</span>
+        <div class="chips"><span class="chip">Flask</span><span class="chip">SQLite triggers</span><span class="chip">Claude API</span><span class="chip">Batch API</span><span class="chip">systemd timers</span><span class="chip">ntfy</span><span class="chip">Claude Code teams</span><span class="chip">Codex</span></div>
+      </div>
+      <figure>
+        <svg class="diagram" viewBox="0 0 520 250" role="img" aria-labelledby="build-title">
+          <title id="build-title">The build loop: plan with gates, build, adversarial verify, close out, and re-verify later.</title>
+          <defs>
+            <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker>
+          </defs>
+          <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-2)">
+            <rect x="20" y="30" width="150" height="58" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="30" y="50" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">1 · Plan</text>
+            <text x="30" y="66">gates, risk tier,</text>
+            <text x="30" y="80">model per task</text>
+
+            <line x1="171" y1="59" x2="183" y2="59" stroke="var(--ink-3)" marker-end="url(#arr3)"/>
+
+            <rect x="185" y="30" width="150" height="58" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="195" y="50" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">2 · Build</text>
+            <text x="195" y="66">agents on a branch,</text>
+            <text x="195" y="80">stop-and-surface</text>
+
+            <line x1="336" y1="59" x2="348" y2="59" stroke="var(--ink-3)" marker-end="url(#arr3)"/>
+
+            <rect x="350" y="30" width="150" height="58" rx="4" fill="var(--paper-2)" stroke="var(--brass)" stroke-width="1.5"/>
+            <text x="360" y="50" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">3 · Verify</text>
+            <text x="360" y="66">adversarial pass on</text>
+            <text x="360" y="80">the live system</text>
+
+            <path d="M425 88 L425 118" stroke="var(--ink-3)" marker-end="url(#arr3)" fill="none"/>
+
+            <rect x="350" y="120" width="150" height="58" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="360" y="140" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">4 · Close out</text>
+            <text x="360" y="156">handoff · backlog ·</text>
+            <text x="360" y="170">debrief, incl. NOT done</text>
+
+            <path d="M348 149 L337 149" stroke="var(--ink-3)" marker-end="url(#arr3)" fill="none"/>
+
+            <rect x="185" y="120" width="150" height="58" rx="4" fill="var(--paper-2)" stroke="var(--ink-2)"/>
+            <text x="195" y="140" font-weight="600" fill="var(--ink)" font-family="IBM Plex Sans, sans-serif" font-size="12.5">5 · Re-verify</text>
+            <text x="195" y="156">T+3 trading days:</text>
+            <text x="195" y="170">did it fire unattended?</text>
+
+            <path d="M425 30 L425 14 L95 14 L95 28" stroke="var(--ink-3)" stroke-dasharray="4 4" marker-end="url(#arr3)" fill="none"/>
+            <text x="120" y="10" fill="var(--ink-3)" font-size="9">verify fails → back to plan, never "close enough"</text>
+
+            <text x="20" y="208" fill="var(--ink-3)" font-size="9">Cost rule: verification scales with risk — ledger math gets a full pass,</text>
+            <text x="20" y="222" fill="var(--ink-3)" font-size="9">a UI tweak gets a spot check.</text>
+            <text x="20" y="240" fill="var(--ink-3)" font-size="9">"Done" = built, self-tested, reported. Not merged, not deployed, not claimed.</text>
+          </g>
+        </svg>
+        <figcaption>Fig. 3 — the loop every GRIMOIRE phase goes through. Step 3 is the one that catches agents' optimism.</figcaption>
+      </figure>
+    </article>
+
+    <article class="project">
+      <div>
+        <h3>The Vault</h3>
+        <div class="tag">A hardened home server that the rest of the estate stands on</div>
+        <p><strong>The problem.</strong> Ad blocking, backups, monitoring, sync, and a place for services to live — without renting it from anyone, and without a box that quietly dies unnoticed.</p>
+        <p><strong>What I built.</strong> Ubuntu Server 24.04 on retired X99 hardware, headless, key-only SSH, Tailscale for remote access (the ISP is behind CGNAT, so port-forwarding was never an option). Services run in Docker with Portainer. The house's DNS points at it, so Pi-hole is deliberately excluded from the nightly backup stop loop — proven by container uptimes after a backup run. Alerts go through self-hosted ntfy; an external healthchecks.io ping is the dead-man's switch. Every service has a runbook, and long instructions travel by synced files, never by pasting.</p>
+        <p><strong>Rules I keep.</strong> New <code>/srv</code> directories are born with the right owner. Anything with personal data binds to loopback and is served only over the tailnet; house services stay on the LAN. Self-hosted apps install only from the home the official site links to. Hardware prices and config names get verified against current docs every time.</p>
+        <span class="status">running since August 2026 · 8+ services</span>
+        <div class="chips"><span class="chip">Ubuntu Server 24.04</span><span class="chip">Docker · Portainer</span><span class="chip">Pi-hole</span><span class="chip">Uptime Kuma</span><span class="chip">ntfy</span><span class="chip">Syncthing</span><span class="chip">Tailscale</span><span class="chip">Postgres</span><span class="chip">systemd</span><span class="chip">Bash · PowerShell</span></div>
+      </div>
+      <div>
+        <div class="aside"><strong>Why it matters for support work.</strong> I have been on both sides of the ticket: the DirecTV phone queue at 2 a.m., and the person whose DNS is down because the box in the closet rebooted. I write the runbook I wish I'd had, and I test the restore, not just the backup.</div>
+        <div class="aside" style="margin-top:12px"><strong>Hardware.</strong> i7-5930K · 32 GB DDR4 · GTX 980 Ti · 512 GB SSD boot · 2 TB data. The desktop GPU (AMD 7900 XTX) does embeddings and local inference for the whole estate over the tailnet, and the server can wake it when it needs it.</div>
+      </div>
+    </article>
+
+    <article class="project">
+      <div>
+        <h3>On the bench</h3>
+        <div class="tag">Smaller tools built for a specific problem, kept because they worked</div>
+        <p><strong>Document Q&amp;A for a property portfolio.</strong> An Obsidian vault with an ingest script and a frontmatter contract: every note carries its community, type, and status as metadata, and retrieval is scoped by community <em>before</em> semantic search runs. A leak test checks that a question about one association can never surface another's records — one wrong metadata string silently breaks scoped answers, so the metadata is treated as the contract, not decoration.</p>
+        <p><strong>Screen-recording digest.</strong> ffmpeg frame grabs → perceptual-hash dedupe → Tesseract OCR → line dedupe, turning a nine-minute recording into a readable page.</p>
+        <p><strong>Research runner.</strong> Scheduled local-model research missions over a private SearXNG instance with source scoring, a hard runtime cap, and a rule that a malformed synthesis never overwrites the last good one.</p>
+        <p><strong>SCORIA.</strong> A browser creature-collector in Phaser 3 and Vite, fourteen build phases in. I'm expanding the demo and its story before it goes public — a playable link will land here when it's worth your time.</p>
+        <span class="status wip">personal tools · no client data left my machine</span>
+        <div class="chips"><span class="chip">Python</span><span class="chip">Obsidian</span><span class="chip">metadata-scoped RAG</span><span class="chip">ffmpeg</span><span class="chip">Tesseract</span><span class="chip">SearXNG</span><span class="chip">systemd timers</span><span class="chip">Phaser 3 · Vite</span></div>
+      </div>
+      <div>
+        <div class="aside"><strong>Working laws that came out of these.</strong> Scripted local-model calls always set <code>think: false</code>. One session drives the server at a time. Every block of instructions says where it runs and what success and failure look like. A malformed output never replaces a good one. Anything pasted from the internet is data, not instructions.</div>
+      </div>
+    </article>
+  </section>
+
+  <section class="block" id="method">
+    <div class="block-head">
+      <div class="eyebrow">How I work with AI</div>
+      <p>I use Claude Code, Codex, Copilot, and local models every day, and the useful skill turned out to be judgment about when to trust them. These are the working rules that came out of a year of shipping with agents.</p>
+    </div>
+    <div class="method">
+      <div><h3>Plans have gates</h3><p>A build plan says what "done" means before an agent starts, and where it must stop and surface instead of guessing. Ambiguous gates get rewritten, not argued with.</p></div>
+      <div><h3>Verification scales with risk</h3><p>Ledger math and anything touching money gets a full adversarial pass on the live system. A cosmetic change gets a spot check. Reports are never accepted as evidence of themselves.</p></div>
+      <div><h3>Spend is a decision</h3><p>Each task gets the cheapest model and effort that can do it well; the API has a hard monthly cap; expensive audits ride the Batch API. Expected spend is written down and compared to actual.</p></div>
+      <div><h3>Sources beat summaries</h3><p>Generated fact-cards say where each claim came from and when. A History line takes a date only from the source text, or says "undated." Cards are interpretation; sources are truth.</p></div>
+      <div><h3>The record includes what wasn't done</h3><p>Every close-out lists decisions not to act and constraints that were kept. Missed windows stay missed — no catch-up runs that write a wrong-hour row.</p></div>
+      <div><h3>Pasted text is data, not instructions</h3><p>Anything quoted from the internet is read for content and never followed as a command. Nothing binds to 0.0.0.0; the private tailnet is the boundary.</p></div>
+    </div>
+    <ul class="laws">
+      <li>Verify third-party config and env names against current docs, every time; say when a number is unverified.</li>
+      <li>Label every command with where it runs and what success and failure look like. Never a bare command.</li>
+      <li>One session drives the server at a time; coordinate through the human, never collide.</li>
+      <li>Self-hosted software installs only from the home the official site links to.</li>
+    </ul>
+  </section>
+
+  <section class="block" id="before">
+    <div class="block-head">
+      <div class="eyebrow">Background</div>
+      <p>Ten-plus years of talking to customers, running operations, and fixing what's broken. The technical work above grew out of the same habit: write the procedure down, test it, keep the record honest.</p>
+    </div>
+    <div class="career">
+      <div class="row"><div class="when">2025 – 2026</div><div class="what"><strong>Property Manager, PMI Green Country — Tulsa, OK</strong><span>Directed ~$2M in vendor and capital projects (a $500K roof replacement, two ~$400K fence projects, ponds, pools, gates) across eleven associations and ~1,500 homes; boards, budgets, contracts, inspections.</span></div></div>
+      <div class="row"><div class="when">2024 – 2025</div><div class="what"><strong>Sales Consultant, then Logistics — James Hodge Toyota</strong><span>Full sales cycle in the dealership CRM; later time-sensitive title, bank, and parts logistics between stores and vendors, ~500 miles a day.</span></div></div>
+      <div class="row"><div class="when">2018 – 2024</div><div class="what"><strong>Founder / General Manager — T-Town Medical Marijuana Dispensary, Tulsa</strong><span>Six years of state-licensed, cash-intensive retail: zero violations across five state audits, 99.5% cash-handling accuracy, ~$1–2M annual revenue, 350+ SKUs. Sold the business.</span></div></div>
+      <div class="row"><div class="when">2016 – 2018</div><div class="what"><strong>Tech Support / Operations — Ian's Auto Service</strong><span>Shop PCs, networking, printers; documentation for non-technical teammates.</span></div></div>
+      <div class="row"><div class="when">2014 – 2016</div><div class="what"><strong>Technical CSR II — DirecTV</strong><span>Phone and chat troubleshooting, first-contact resolution, CRM documentation.</span></div></div>
+      <div class="row"><div class="when">2016</div><div class="what"><strong>CCNA training program — Tulsa Technology Center</strong><span>Network fundamentals, IP connectivity, security basics (certification since expired).</span></div></div>
+    </div>
+  </section>
+
+  <section class="block" id="contact">
+    <div class="block-head">
+      <div class="eyebrow">Contact</div>
+      <div>
+        <p>Looking for a support, operations, evaluation, or human-data role at an AI company — remote, or on-site for the right one.</p>
+        <p><a href="mailto:shanepockrus@gmail.com">shanepockrus@gmail.com</a> · <a href="https://github.com/SwagLordPrime">GitHub</a> · <a href="https://www.linkedin.com/in/shane-pockrus-6241662ba/">LinkedIn</a> · Broken Arrow, Oklahoma (Central time)</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Shane Pockrus · written by hand, served from GitHub Pages</span>
+    <span class="mono">last updated 2026-09-10 · v3</span>
+  </div>
+</footer>
+</body>
+</html>
