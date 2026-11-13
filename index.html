@@ -135,6 +135,9 @@
   .status.wip::before { background: var(--brass); }
   .aside { background: var(--brass-wash); border-left: 3px solid var(--brass); padding: 10px 14px; font-size: 0.92rem; color: var(--ink-2); margin-top: 10px; }
   .aside strong { color: var(--ink); }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  .phones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+  .repo-link { font-size: 0.92rem; }
 
   /* Method */
   .method { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; }
@@ -193,6 +196,7 @@
       <div class="cta">
         <a class="btn primary" href="#projects">See the builds</a>
         <a class="btn" href="mailto:shanepockrus@gmail.com">Email me</a>
+        <a class="btn" href="https://github.com/SwagLordPrime">GitHub</a>
       </div>
     </div>
     <figure>
@@ -245,13 +249,13 @@
   <section class="block" id="running">
     <div class="block-head">
       <div class="eyebrow">What I run</div>
-      <p>The Vault is a repurposed X99 desktop (i7-5930K, 32 GB) turned headless Ubuntu Server. It is the load-bearing wall of the house: if it goes down, DNS goes down, so it is monitored from outside itself. Everything below is in production for a household of two, documented in runbooks and a command cheat sheet.</p>
+      <p>The Vault is a repurposed X99 desktop (i7-5930K, 32 GB) turned headless Ubuntu Server. Everything else in the house leans on it, so it is monitored from outside itself. Everything below is in production for a household of two, documented in runbooks and a command cheat sheet.</p>
     </div>
     <div class="runbook">
       <table>
         <thead><tr><th>Service</th><th>Job</th><th>Schedule / note</th></tr></thead>
         <tbody>
-          <tr><td class="svc">Pi-hole</td><td>Network-wide DNS filtering; the router hands the Vault out as DNS to every device</td><td class="when">always · excluded from the backup stop loop</td></tr>
+          <tr><td class="svc">Pi-hole</td><td>Network-wide DNS filtering, built to be the house DNS; the house is on public DNS for now while a storm-damaged router is replaced</td><td class="when">running · excluded from the backup stop loop</td></tr>
           <tr><td class="svc">Uptime Kuma → ntfy</td><td>A monitor per service; failures push to both phones through self-hosted ntfy</td><td class="when">always</td></tr>
           <tr><td class="svc">healthchecks.io cron</td><td>Dead-man's switch: an outage alerts even when Kuma dies with the box</td><td class="when">every 5 min</td></tr>
           <tr><td class="svc">Backups</td><td>Containers stopped, snapshot taken, mirrored to the PC by Syncthing</td><td class="when">03:00 · 14-day retention</td></tr>
@@ -260,7 +264,7 @@
           <tr><td class="svc">memory-mcp</td><td>MCP server exposing search / read_doc / stats to Claude Desktop, Claude Code, and Codex</td><td class="when">systemd · HTTPS on the tailnet</td></tr>
           <tr><td class="svc">Research runner</td><td>Scheduled local-model research missions over a private SearXNG instance, with source scoring</td><td class="when">04:00 · must finish by 08:15</td></tr>
           <tr><td class="svc">Chronicler</td><td>A morning steward's brief on the estate's own state</td><td class="when">06:00</td></tr>
-          <tr><td class="svc">Jellyfin · wger · Palworld</td><td>Media, fitness tracking (tailnet-only), and a game server for friends</td><td class="when">always</td></tr>
+          <tr><td class="svc">Jellyfin · wger</td><td>Media library and fitness tracking (tailnet-only)</td><td class="when">always</td></tr>
           <tr><td class="svc">Syncthing · Tailscale · Portainer · mosquitto</td><td>Sync with versioning, the VPN, a Docker UI, and an MQTT broker for the sensor builds</td><td class="when">always</td></tr>
         </tbody>
       </table>
@@ -270,7 +274,7 @@
   <section class="block" id="projects">
     <div class="block-head">
       <div class="eyebrow">Projects</div>
-      <p>Three builds and a bench of smaller tools, each one solving a problem I had. Dates are 2025–2026; all of them are running today unless marked.</p>
+      <p>Six builds and a bench of smaller tools, each one solving a problem I had. Dates are 2025–2026; status is marked on each one. Four have public source with a case study.</p>
     </div>
 
     <article class="project">
@@ -345,7 +349,7 @@
         <p><strong>The problem.</strong> Trading decisions made in the moment are bad decisions. I wanted a system where the rules are written down, the record can't be quietly edited, and a review is forced on a schedule.</p>
         <p><strong>What I built.</strong> A Flask + SQLite application with append-only ledgers — <code>UPDATE</code> and <code>DELETE</code> raise inside the database, so a mistake is corrected by a new row, never by rewriting history — a single-writer boundary (the app is the only ledger writer), and scheduled "rites" run by systemd timers behind a window guard that refuses to fire more than twenty minutes off its ratified minute, because a missed window must stay missed. A read-only brokerage integration feeds positions; Claude generates the morning and Monday pre-trade briefs from versioned per-job prompt files under a hard monthly API spend cap, with deep audits routed through the Batch API for the discount.</p>
         <p><strong>How it shipped.</strong> I wrote build plans with explicit gates, chose model and effort tiers per task to control cost, ran an adversarial verification pass against the live system before accepting any "done," and kept handoff, backlog, and debrief documents current across Claude and Codex sessions. Rites that fire unattended are re-verified three trading days later, because a cutover-day check can't prove that.</p>
-        <span class="status">running · rites fire from the server on schedule · private repo (it holds my trading record)</span>
+        <span class="status wip">scheduled jobs running · trade actions in dry-run only, nothing trades on its own · private repo (it holds my trading record)</span>
         <div class="chips"><span class="chip">Flask</span><span class="chip">SQLite triggers</span><span class="chip">Claude API</span><span class="chip">Batch API</span><span class="chip">systemd timers</span><span class="chip">ntfy</span><span class="chip">Claude Code teams</span><span class="chip">Codex</span></div>
       </div>
       <figure>
@@ -405,17 +409,62 @@
         <h3>The Vault</h3>
         <div class="tag">A hardened home server that the rest of the estate stands on</div>
         <p><strong>The problem.</strong> Ad blocking, backups, monitoring, sync, and a place for services to live — without renting it from anyone, and without a box that quietly dies unnoticed.</p>
-        <p><strong>What I built.</strong> Ubuntu Server 24.04 on retired X99 hardware, headless, key-only SSH, Tailscale for remote access (the ISP is behind CGNAT, so port-forwarding was never an option). Services run in Docker with Portainer. The house's DNS points at it, so Pi-hole is deliberately excluded from the nightly backup stop loop — proven by container uptimes after a backup run. Alerts go through self-hosted ntfy; an external healthchecks.io ping is the dead-man's switch. Every service has a runbook, and long instructions travel by synced files, never by pasting.</p>
+        <p><strong>What I built.</strong> Ubuntu Server 24.04 on retired X99 hardware, headless, key-only SSH, Tailscale for remote access (the ISP is behind CGNAT, so port-forwarding was never an option). Services run in Docker with Portainer. Pi-hole is deliberately excluded from the nightly backup stop loop so DNS filtering never drops during a backup — proven by container uptimes after a backup run. Alerts go through self-hosted ntfy; an external healthchecks.io ping is the dead-man's switch. Every service has a runbook, and long instructions travel by synced files, never by pasting.</p>
         <p><strong>Rules I keep.</strong> New <code>/srv</code> directories are born with the right owner. Anything with personal data binds to loopback and is served only over the tailnet; house services stay on the LAN. Self-hosted apps install only from the home the official site links to. Hardware prices and config names get verified against current docs every time.</p>
         <span class="status">running since August 2026 · 8+ services</span>
         <div class="chips"><span class="chip">Ubuntu Server 24.04</span><span class="chip">Docker · Portainer</span><span class="chip">Pi-hole</span><span class="chip">Uptime Kuma</span><span class="chip">ntfy</span><span class="chip">Syncthing</span><span class="chip">Tailscale</span><span class="chip">Postgres</span><span class="chip">systemd</span><span class="chip">Bash · PowerShell</span></div>
       </div>
       <div>
-        <div class="aside"><strong>Why it matters for support work.</strong> I have been on both sides of the ticket: the DirecTV phone queue at 2 a.m., and the person whose DNS is down because the box in the closet rebooted. I write the runbook I wish I'd had, and I test the restore, not just the backup.</div>
+        <div class="aside"><strong>Why it matters for support work.</strong> I have been on both sides of the ticket: the DirecTV phone queue at 2 a.m., and the person whose internet is down because the box in the closet rebooted. I write the runbook I wish I'd had, and I test the restore, not just the backup.</div>
         <div class="aside" style="margin-top:12px"><strong>Hardware.</strong> i7-5930K · 32 GB DDR4 · GTX 980 Ti · 512 GB SSD boot · 2 TB data. The desktop GPU (AMD 7900 XTX) does embeddings and local inference for the whole estate over the tailnet, and the server can wake it when it needs it.</div>
       </div>
     </article>
 
+    <article class="project">
+      <div>
+        <h3>The Common Room</h3>
+        <div class="tag">A local task board where my AI assistants pick up jobs, check each other's work and report back, while I keep the final say</div>
+        <p><strong>The problem.</strong> Running several AI assistants at once turned me into the copy-paste messenger between chat windows. Nobody could tell who was working on what, and "done" often meant nobody had checked.</p>
+        <p><strong>What I built.</strong> I designed the rules and directed Codex and Claude Code to build it: a board backed by SQLite where every assistant has a seat with a role, the builder can never review its own work (the database enforces it), two real rejections stop a task until I restart it, and a submit gate checks that every cited file and line exists before a reviewer spends time on it. Anything waiting on me sits at the top under "Needs Shane", with the exact line to answer it. From October on, the room's own upgrades were built as tasks inside the room and switched over only after the full test suite passed.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/common-room-showcase">github.com/SwagLordPrime/common-room-showcase</a>. It runs on Python's standard library, and a built-in example room lets you click around in about a minute.</p>
+        <span class="status">ran daily September to November 2026 · paused · source public</span>
+        <div class="chips"><span class="chip">Python (stdlib only)</span><span class="chip">SQLite</span><span class="chip">vanilla JS</span><span class="chip">Claude Code</span><span class="chip">Codex</span><span class="chip">Ollama</span></div>
+      </div>
+      <figure class="shot">
+        <img src="images/common-room-board.webp" width="1440" height="750" loading="lazy" alt="The Common Room task board with Inbox, Working, Review, Done and Owner Decisions columns, filled with made-up example tasks">
+        <figcaption>Fig. 4 — the board with its built-in example room. Every task shown is made up.</figcaption>
+      </figure>
+    </article>
+    <article class="project">
+      <div>
+        <h3>MyLife Hub</h3>
+        <div class="tag">A phone home screen for the home lab that never shows a green light it can't back up</div>
+        <p><strong>The problem.</strong> My self-hosted apps were a pile of phone bookmarks, some working only at home and some only over the VPN, with no honest way to tell what was up.</p>
+        <p><strong>What I built.</strong> One screen, styled like a late-night TV broadcast, that opens every app in one tap, shows the one thing to do today, and labels each link with where it works. Its main rule: it fetches and probes nothing. A tile shows a state only when a status file names the check that produced it and when it ran; otherwise it says UNKNOWN. Plain HTML, CSS and JavaScript with no framework or build step, built by Claude Code to my spec and checked by a separate Codex reviewer.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/mylife-hub">github.com/SwagLordPrime/mylife-hub</a>. Open <code>index.html</code> in any browser.</p>
+        <span class="status">running on my phone · source public</span>
+        <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">no framework</span><span class="chip">Claude Code</span><span class="chip">Codex review</span></div>
+      </div>
+      <div class="phones">
+        <figure class="shot"><img src="images/mylife-home.webp" width="500" height="1000" loading="lazy" alt="MyLife home screen standing by at night"><figcaption>Home, standing by.</figcaption></figure>
+        <figure class="shot"><img src="images/mylife-alert.webp" width="390" height="844" loading="lazy" alt="MyLife in alert mood on its test page with example data"><figcaption>Alert mood, example data.</figcaption></figure>
+      </div>
+    </article>
+    <article class="project">
+      <div>
+        <h3>SCORIA</h3>
+        <div class="tag">A dark creature-collector RPG in the browser, directed by me and built phase by phase by Claude Code</div>
+        <p><strong>The problem.</strong> I wanted to make a real, finishable game without being a programmer, and without the drift that happens when every AI session forgets what the last one decided.</p>
+        <p><strong>What I built.</strong> A Phaser 3 game with seven maps, turn-based battles, catching, evolution, twelve status effects, a boss fight, and a merc economy with loot and a contract board. Every phase starts from a written build plan with locked numbers and acceptance checks, has to pass a headless simulation, and ends with the agent's own report. All ten simulations pass on the public copy.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/scoria-game">github.com/SwagLordPrime/scoria-game</a>. <code>npm install</code>, then <code>npm run dev</code>.</p>
+        <span class="status wip">in development · phases 0–14 shipped · source public</span>
+        <div class="chips"><span class="chip">Phaser 3</span><span class="chip">Vite</span><span class="chip">JavaScript</span><span class="chip">Node sims</span><span class="chip">Claude Code</span></div>
+      </div>
+      <figure class="shot">
+        <img src="images/scoria-battle.webp" width="800" height="600" loading="lazy" alt="A SCORIA battle: a wild Fenmoth against the player's Slagling, with the Fight, Bind, Item, Swap and Run menu">
+        <figcaption>Fig. 5 — a wild encounter on the first route.</figcaption>
+      </figure>
+    </article>
     <article class="project">
       <div>
         <h3>On the bench</h3>
@@ -423,9 +472,8 @@
         <p><strong>Document Q&amp;A for a property portfolio.</strong> An Obsidian vault with an ingest script and a frontmatter contract: every note carries its community, type, and status as metadata, and retrieval is scoped by community <em>before</em> semantic search runs. A leak test checks that a question about one association can never surface another's records — one wrong metadata string silently breaks scoped answers, so the metadata is treated as the contract, not decoration.</p>
         <p><strong>Screen-recording digest.</strong> ffmpeg frame grabs → perceptual-hash dedupe → Tesseract OCR → line dedupe, turning a nine-minute recording into a readable page.</p>
         <p><strong>Research runner.</strong> Scheduled local-model research missions over a private SearXNG instance with source scoring, a hard runtime cap, and a rule that a malformed synthesis never overwrites the last good one.</p>
-        <p><strong>SCORIA.</strong> A browser creature-collector in Phaser 3 and Vite, fourteen build phases in. I'm expanding the demo and its story before it goes public — a playable link will land here when it's worth your time.</p>
         <span class="status wip">personal tools · no client data left my machine</span>
-        <div class="chips"><span class="chip">Python</span><span class="chip">Obsidian</span><span class="chip">metadata-scoped RAG</span><span class="chip">ffmpeg</span><span class="chip">Tesseract</span><span class="chip">SearXNG</span><span class="chip">systemd timers</span><span class="chip">Phaser 3 · Vite</span></div>
+        <div class="chips"><span class="chip">Python</span><span class="chip">Obsidian</span><span class="chip">metadata-scoped RAG</span><span class="chip">ffmpeg</span><span class="chip">Tesseract</span><span class="chip">SearXNG</span><span class="chip">systemd timers</span></div>
       </div>
       <div>
         <div class="aside"><strong>Working laws that came out of these.</strong> Scripted local-model calls always set <code>think: false</code>. One session drives the server at a time. Every block of instructions says where it runs and what success and failure look like. A malformed output never replaces a good one. Anything pasted from the internet is data, not instructions.</div>
@@ -473,7 +521,7 @@
     <div class="block-head">
       <div class="eyebrow">Contact</div>
       <div>
-        <p>Looking for a support, operations, evaluation, or human-data role at an AI company — remote, or on-site for the right one.</p>
+        <p>Open to work: technical support, IT and operations roles, and other customer-facing work where I can put these skills to use. Remote, or on-site around Tulsa.</p>
         <p><a href="mailto:shanepockrus@gmail.com">shanepockrus@gmail.com</a> · <a href="https://github.com/SwagLordPrime">GitHub</a> · <a href="https://www.linkedin.com/in/shane-pockrus-6241662ba/">LinkedIn</a> · Broken Arrow, Oklahoma (Central time)</p>
       </div>
     </div>
@@ -482,8 +530,8 @@
 
 <footer>
   <div class="wrap">
-    <span>Shane Pockrus · written by hand, served from GitHub Pages</span>
-    <span class="mono">last updated 2026-09-10 · v3</span>
+    <span>Shane Pockrus · built with Claude Code, served from GitHub Pages</span>
+    <span class="mono">last updated 2026-11-13 · v4</span>
   </div>
 </footer>
 </body>
