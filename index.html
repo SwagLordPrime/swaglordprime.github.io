@@ -249,13 +249,13 @@
   <section class="block" id="running">
     <div class="block-head">
       <div class="eyebrow">What I run</div>
-      <p>The Vault is a repurposed X99 desktop (i7-5930K, 32 GB) turned headless Ubuntu Server. It is the load-bearing wall of the house: if it goes down, DNS goes down, so it is monitored from outside itself. Everything below is in production for a household of two, documented in runbooks and a command cheat sheet.</p>
+      <p>The Vault is a repurposed X99 desktop (i7-5930K, 32 GB) turned headless Ubuntu Server. Everything else in the house leans on it, so it is monitored from outside itself. Everything below is in production for a household of two, documented in runbooks and a command cheat sheet.</p>
     </div>
     <div class="runbook">
       <table>
         <thead><tr><th>Service</th><th>Job</th><th>Schedule / note</th></tr></thead>
         <tbody>
-          <tr><td class="svc">Pi-hole</td><td>Network-wide DNS filtering; the router hands the Vault out as DNS to every device</td><td class="when">always · excluded from the backup stop loop</td></tr>
+          <tr><td class="svc">Pi-hole</td><td>Network-wide DNS filtering, built to be the house DNS; the house is on public DNS for now while a storm-damaged router is replaced</td><td class="when">running · excluded from the backup stop loop</td></tr>
           <tr><td class="svc">Uptime Kuma → ntfy</td><td>A monitor per service; failures push to both phones through self-hosted ntfy</td><td class="when">always</td></tr>
           <tr><td class="svc">healthchecks.io cron</td><td>Dead-man's switch: an outage alerts even when Kuma dies with the box</td><td class="when">every 5 min</td></tr>
           <tr><td class="svc">Backups</td><td>Containers stopped, snapshot taken, mirrored to the PC by Syncthing</td><td class="when">03:00 · 14-day retention</td></tr>
@@ -264,7 +264,7 @@
           <tr><td class="svc">memory-mcp</td><td>MCP server exposing search / read_doc / stats to Claude Desktop, Claude Code, and Codex</td><td class="when">systemd · HTTPS on the tailnet</td></tr>
           <tr><td class="svc">Research runner</td><td>Scheduled local-model research missions over a private SearXNG instance, with source scoring</td><td class="when">04:00 · must finish by 08:15</td></tr>
           <tr><td class="svc">Chronicler</td><td>A morning steward's brief on the estate's own state</td><td class="when">06:00</td></tr>
-          <tr><td class="svc">Jellyfin · wger · Palworld</td><td>Media, fitness tracking (tailnet-only), and a game server for friends</td><td class="when">always</td></tr>
+          <tr><td class="svc">Jellyfin · wger</td><td>Media library and fitness tracking (tailnet-only)</td><td class="when">always</td></tr>
           <tr><td class="svc">Syncthing · Tailscale · Portainer · mosquitto</td><td>Sync with versioning, the VPN, a Docker UI, and an MQTT broker for the sensor builds</td><td class="when">always</td></tr>
         </tbody>
       </table>
@@ -349,7 +349,7 @@
         <p><strong>The problem.</strong> Trading decisions made in the moment are bad decisions. I wanted a system where the rules are written down, the record can't be quietly edited, and a review is forced on a schedule.</p>
         <p><strong>What I built.</strong> A Flask + SQLite application with append-only ledgers — <code>UPDATE</code> and <code>DELETE</code> raise inside the database, so a mistake is corrected by a new row, never by rewriting history — a single-writer boundary (the app is the only ledger writer), and scheduled "rites" run by systemd timers behind a window guard that refuses to fire more than twenty minutes off its ratified minute, because a missed window must stay missed. A read-only brokerage integration feeds positions; Claude generates the morning and Monday pre-trade briefs from versioned per-job prompt files under a hard monthly API spend cap, with deep audits routed through the Batch API for the discount.</p>
         <p><strong>How it shipped.</strong> I wrote build plans with explicit gates, chose model and effort tiers per task to control cost, ran an adversarial verification pass against the live system before accepting any "done," and kept handoff, backlog, and debrief documents current across Claude and Codex sessions. Rites that fire unattended are re-verified three trading days later, because a cutover-day check can't prove that.</p>
-        <span class="status">running · rites fire from the server on schedule · private repo (it holds my trading record)</span>
+        <span class="status wip">scheduled jobs running · trade actions in dry-run only, nothing trades on its own · private repo (it holds my trading record)</span>
         <div class="chips"><span class="chip">Flask</span><span class="chip">SQLite triggers</span><span class="chip">Claude API</span><span class="chip">Batch API</span><span class="chip">systemd timers</span><span class="chip">ntfy</span><span class="chip">Claude Code teams</span><span class="chip">Codex</span></div>
       </div>
       <figure>
@@ -409,13 +409,13 @@
         <h3>The Vault</h3>
         <div class="tag">A hardened home server that the rest of the estate stands on</div>
         <p><strong>The problem.</strong> Ad blocking, backups, monitoring, sync, and a place for services to live — without renting it from anyone, and without a box that quietly dies unnoticed.</p>
-        <p><strong>What I built.</strong> Ubuntu Server 24.04 on retired X99 hardware, headless, key-only SSH, Tailscale for remote access (the ISP is behind CGNAT, so port-forwarding was never an option). Services run in Docker with Portainer. The house's DNS points at it, so Pi-hole is deliberately excluded from the nightly backup stop loop — proven by container uptimes after a backup run. Alerts go through self-hosted ntfy; an external healthchecks.io ping is the dead-man's switch. Every service has a runbook, and long instructions travel by synced files, never by pasting.</p>
+        <p><strong>What I built.</strong> Ubuntu Server 24.04 on retired X99 hardware, headless, key-only SSH, Tailscale for remote access (the ISP is behind CGNAT, so port-forwarding was never an option). Services run in Docker with Portainer. Pi-hole is deliberately excluded from the nightly backup stop loop so DNS filtering never drops during a backup — proven by container uptimes after a backup run. Alerts go through self-hosted ntfy; an external healthchecks.io ping is the dead-man's switch. Every service has a runbook, and long instructions travel by synced files, never by pasting.</p>
         <p><strong>Rules I keep.</strong> New <code>/srv</code> directories are born with the right owner. Anything with personal data binds to loopback and is served only over the tailnet; house services stay on the LAN. Self-hosted apps install only from the home the official site links to. Hardware prices and config names get verified against current docs every time.</p>
         <span class="status">running since August 2026 · 8+ services</span>
         <div class="chips"><span class="chip">Ubuntu Server 24.04</span><span class="chip">Docker · Portainer</span><span class="chip">Pi-hole</span><span class="chip">Uptime Kuma</span><span class="chip">ntfy</span><span class="chip">Syncthing</span><span class="chip">Tailscale</span><span class="chip">Postgres</span><span class="chip">systemd</span><span class="chip">Bash · PowerShell</span></div>
       </div>
       <div>
-        <div class="aside"><strong>Why it matters for support work.</strong> I have been on both sides of the ticket: the DirecTV phone queue at 2 a.m., and the person whose DNS is down because the box in the closet rebooted. I write the runbook I wish I'd had, and I test the restore, not just the backup.</div>
+        <div class="aside"><strong>Why it matters for support work.</strong> I have been on both sides of the ticket: the DirecTV phone queue at 2 a.m., and the person whose internet is down because the box in the closet rebooted. I write the runbook I wish I'd had, and I test the restore, not just the backup.</div>
         <div class="aside" style="margin-top:12px"><strong>Hardware.</strong> i7-5930K · 32 GB DDR4 · GTX 980 Ti · 512 GB SSD boot · 2 TB data. The desktop GPU (AMD 7900 XTX) does embeddings and local inference for the whole estate over the tailnet, and the server can wake it when it needs it.</div>
       </div>
     </article>
@@ -521,7 +521,7 @@
     <div class="block-head">
       <div class="eyebrow">Contact</div>
       <div>
-        <p>Looking for a support, operations, evaluation, or human-data role at an AI company — remote, or on-site for the right one.</p>
+        <p>Open to work: technical support, IT and operations roles, and other customer-facing work where I can put these skills to use. Remote, or on-site around Tulsa.</p>
         <p><a href="mailto:shanepockrus@gmail.com">shanepockrus@gmail.com</a> · <a href="https://github.com/SwagLordPrime">GitHub</a> · <a href="https://www.linkedin.com/in/shane-pockrus-6241662ba/">LinkedIn</a> · Broken Arrow, Oklahoma (Central time)</p>
       </div>
     </div>
