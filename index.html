@@ -135,6 +135,9 @@
   .status.wip::before { background: var(--brass); }
   .aside { background: var(--brass-wash); border-left: 3px solid var(--brass); padding: 10px 14px; font-size: 0.92rem; color: var(--ink-2); margin-top: 10px; }
   .aside strong { color: var(--ink); }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  .phones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+  .repo-link { font-size: 0.92rem; }
 
   /* Method */
   .method { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 32px; }
@@ -193,6 +196,7 @@
       <div class="cta">
         <a class="btn primary" href="#projects">See the builds</a>
         <a class="btn" href="mailto:shanepockrus@gmail.com">Email me</a>
+        <a class="btn" href="https://github.com/SwagLordPrime">GitHub</a>
       </div>
     </div>
     <figure>
@@ -270,7 +274,7 @@
   <section class="block" id="projects">
     <div class="block-head">
       <div class="eyebrow">Projects</div>
-      <p>Three builds and a bench of smaller tools, each one solving a problem I had. Dates are 2025–2026; all of them are running today unless marked.</p>
+      <p>Six builds and a bench of smaller tools, each one solving a problem I had. Dates are 2025–2026; status is marked on each one. Four have public source with a case study.</p>
     </div>
 
     <article class="project">
@@ -418,14 +422,58 @@
 
     <article class="project">
       <div>
+        <h3>The Common Room</h3>
+        <div class="tag">A local task board where my AI assistants pick up jobs, check each other's work and report back, while I keep the final say</div>
+        <p><strong>The problem.</strong> Running several AI assistants at once turned me into the copy-paste messenger between chat windows. Nobody could tell who was working on what, and "done" often meant nobody had checked.</p>
+        <p><strong>What I built.</strong> I designed the rules and directed Codex and Claude Code to build it: a board backed by SQLite where every assistant has a seat with a role, the builder can never review its own work (the database enforces it), two real rejections stop a task until I restart it, and a submit gate checks that every cited file and line exists before a reviewer spends time on it. Anything waiting on me sits at the top under "Needs Shane", with the exact line to answer it. From October on, the room's own upgrades were built as tasks inside the room and switched over only after the full test suite passed.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/common-room-showcase">github.com/SwagLordPrime/common-room-showcase</a>. It runs on Python's standard library, and a built-in example room lets you click around in about a minute.</p>
+        <span class="status">ran daily September to November 2026 · paused · source public</span>
+        <div class="chips"><span class="chip">Python (stdlib only)</span><span class="chip">SQLite</span><span class="chip">vanilla JS</span><span class="chip">Claude Code</span><span class="chip">Codex</span><span class="chip">Ollama</span></div>
+      </div>
+      <figure class="shot">
+        <img src="images/common-room-board.webp" width="1440" height="750" loading="lazy" alt="The Common Room task board with Inbox, Working, Review, Done and Owner Decisions columns, filled with made-up example tasks">
+        <figcaption>Fig. 4 — the board with its built-in example room. Every task shown is made up.</figcaption>
+      </figure>
+    </article>
+    <article class="project">
+      <div>
+        <h3>MyLife Hub</h3>
+        <div class="tag">A phone home screen for the home lab that never shows a green light it can't back up</div>
+        <p><strong>The problem.</strong> My self-hosted apps were a pile of phone bookmarks, some working only at home and some only over the VPN, with no honest way to tell what was up.</p>
+        <p><strong>What I built.</strong> One screen, styled like a late-night TV broadcast, that opens every app in one tap, shows the one thing to do today, and labels each link with where it works. Its main rule: it fetches and probes nothing. A tile shows a state only when a status file names the check that produced it and when it ran; otherwise it says UNKNOWN. Plain HTML, CSS and JavaScript with no framework or build step, built by Claude Code to my spec and checked by a separate Codex reviewer.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/mylife-hub">github.com/SwagLordPrime/mylife-hub</a>. Open <code>index.html</code> in any browser.</p>
+        <span class="status">running on my phone · source public</span>
+        <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">no framework</span><span class="chip">Claude Code</span><span class="chip">Codex review</span></div>
+      </div>
+      <div class="phones">
+        <figure class="shot"><img src="images/mylife-home.webp" width="500" height="1000" loading="lazy" alt="MyLife home screen standing by at night"><figcaption>Home, standing by.</figcaption></figure>
+        <figure class="shot"><img src="images/mylife-alert.webp" width="390" height="844" loading="lazy" alt="MyLife in alert mood on its test page with example data"><figcaption>Alert mood, example data.</figcaption></figure>
+      </div>
+    </article>
+    <article class="project">
+      <div>
+        <h3>SCORIA</h3>
+        <div class="tag">A dark creature-collector RPG in the browser, directed by me and built phase by phase by Claude Code</div>
+        <p><strong>The problem.</strong> I wanted to make a real, finishable game without being a programmer, and without the drift that happens when every AI session forgets what the last one decided.</p>
+        <p><strong>What I built.</strong> A Phaser 3 game with seven maps, turn-based battles, catching, evolution, twelve status effects, a boss fight, and a merc economy with loot and a contract board. Every phase starts from a written build plan with locked numbers and acceptance checks, has to pass a headless simulation, and ends with the agent's own report. All ten simulations pass on the public copy.</p>
+        <p class="repo-link"><strong>Source and case study.</strong> <a href="https://github.com/SwagLordPrime/scoria-game">github.com/SwagLordPrime/scoria-game</a>. <code>npm install</code>, then <code>npm run dev</code>.</p>
+        <span class="status wip">in development · phases 0–14 shipped · source public</span>
+        <div class="chips"><span class="chip">Phaser 3</span><span class="chip">Vite</span><span class="chip">JavaScript</span><span class="chip">Node sims</span><span class="chip">Claude Code</span></div>
+      </div>
+      <figure class="shot">
+        <img src="images/scoria-battle.webp" width="800" height="600" loading="lazy" alt="A SCORIA battle: a wild Fenmoth against the player's Slagling, with the Fight, Bind, Item, Swap and Run menu">
+        <figcaption>Fig. 5 — a wild encounter on the first route.</figcaption>
+      </figure>
+    </article>
+    <article class="project">
+      <div>
         <h3>On the bench</h3>
         <div class="tag">Smaller tools built for a specific problem, kept because they worked</div>
         <p><strong>Document Q&amp;A for a property portfolio.</strong> An Obsidian vault with an ingest script and a frontmatter contract: every note carries its community, type, and status as metadata, and retrieval is scoped by community <em>before</em> semantic search runs. A leak test checks that a question about one association can never surface another's records — one wrong metadata string silently breaks scoped answers, so the metadata is treated as the contract, not decoration.</p>
         <p><strong>Screen-recording digest.</strong> ffmpeg frame grabs → perceptual-hash dedupe → Tesseract OCR → line dedupe, turning a nine-minute recording into a readable page.</p>
         <p><strong>Research runner.</strong> Scheduled local-model research missions over a private SearXNG instance with source scoring, a hard runtime cap, and a rule that a malformed synthesis never overwrites the last good one.</p>
-        <p><strong>SCORIA.</strong> A browser creature-collector in Phaser 3 and Vite, fourteen build phases in. I'm expanding the demo and its story before it goes public — a playable link will land here when it's worth your time.</p>
         <span class="status wip">personal tools · no client data left my machine</span>
-        <div class="chips"><span class="chip">Python</span><span class="chip">Obsidian</span><span class="chip">metadata-scoped RAG</span><span class="chip">ffmpeg</span><span class="chip">Tesseract</span><span class="chip">SearXNG</span><span class="chip">systemd timers</span><span class="chip">Phaser 3 · Vite</span></div>
+        <div class="chips"><span class="chip">Python</span><span class="chip">Obsidian</span><span class="chip">metadata-scoped RAG</span><span class="chip">ffmpeg</span><span class="chip">Tesseract</span><span class="chip">SearXNG</span><span class="chip">systemd timers</span></div>
       </div>
       <div>
         <div class="aside"><strong>Working laws that came out of these.</strong> Scripted local-model calls always set <code>think: false</code>. One session drives the server at a time. Every block of instructions says where it runs and what success and failure look like. A malformed output never replaces a good one. Anything pasted from the internet is data, not instructions.</div>
@@ -482,8 +530,8 @@
 
 <footer>
   <div class="wrap">
-    <span>Shane Pockrus · written by hand, served from GitHub Pages</span>
-    <span class="mono">last updated 2026-09-10 · v3</span>
+    <span>Shane Pockrus · built with Claude Code, served from GitHub Pages</span>
+    <span class="mono">last updated 2026-11-13 · v4</span>
   </div>
 </footer>
 </body>
